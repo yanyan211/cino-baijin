@@ -110,6 +110,53 @@ details.bulkbox[open] summary::after{transform:rotate(-135deg)}
 .delta{font-size:12.5px;color:var(--ink-2);white-space:nowrap}
 .delta.up{color:var(--qq)}.delta.zero{color:var(--warn);font-weight:600}
 
+/* View switch */
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:8px;padding:6px 12px;font-size:13.5px;color:var(--ink-2);min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);font-weight:600}
+.tg.qq[aria-pressed="true"]{background:var(--qq);border-color:var(--qq);--c:var(--qq)}
+.tg.kg[aria-pressed="true"]{background:var(--kg);border-color:var(--kg);--c:var(--kg)}
+.tg.kw[aria-pressed="true"]{background:var(--kw);border-color:var(--kw);--c:var(--kw)}
+
+/* By-platform list */
+.ptabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hh,57px));z-index:3;background:var(--bg);padding:6px 0 8px}
+.ptab{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:14px;line-height:1.35;color:var(--ink-2)}
+.ptab .num{font-size:12.5px;font-weight:500}
+.ptab.qq[aria-pressed="true"]{border-color:var(--qq);background:var(--qq-soft);color:var(--qq)}
+.ptab.kg[aria-pressed="true"]{border-color:var(--kg);background:var(--kg-soft);color:var(--kg)}
+.ptab.kw[aria-pressed="true"]{border-color:var(--kw);background:var(--kw-soft);color:var(--kw)}
+.plist{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 76px 76px;gap:6px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--line)}
+.plist.kw .prow{grid-template-columns:minmax(0,1fr) 58px 58px 88px}
+.prow:last-child{border-bottom:0}
+.prow.done{background:color-mix(in srgb,var(--qq) 8%,var(--surface))}
+.pnm{display:flex;align-items:baseline;gap:6px;min-width:0;flex-wrap:wrap}
+.pnm .idx{color:var(--ink-2);font-size:12px;flex:none}
+.pnm .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.prow.done .pnm .t{color:var(--qq)}
+.pnm .dl{flex-basis:100%;line-height:1.2}
+.pnm .dl:empty{display:none}
+.tg.sm{min-height:40px;font-size:14px;padding:4px 2px;gap:4px;border-radius:10px}
+.tg.sm::before{width:12px;height:12px}
+.kwi{width:100%;border:1.5px solid var(--line);background:var(--surface-2);border-radius:10px;padding:6px 8px;min-height:40px;text-align:right}
+
+/* Overview matrix */
+.mx{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.mx-h,.mx-r{display:grid;grid-template-columns:minmax(0,1fr) repeat(6,40px);column-gap:4px;align-items:center;padding:5px 8px}
+.mx-h{font-size:12.5px;font-weight:700;text-align:center;border-bottom:1px solid var(--line);position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hh,57px));background:var(--surface);z-index:3;border-radius:14px 14px 0 0}
+.mx-h .qq{color:var(--qq)}.mx-h .kg{color:var(--kg)}.mx-h .kw{color:var(--kw)}
+.mx-h span:first-child{text-align:left;color:var(--ink-2);font-weight:500}
+.mx-r{border-bottom:1px solid var(--line)}
+.mx-r:last-child{border-bottom:0}
+.mx-r .t{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-r .t .idx{color:var(--ink-2);font-size:12px;font-weight:400;margin-right:5px}
+.mx-r.done .t{color:var(--qq)}
+.tg.dot{min-height:38px;padding:0;font-size:13px;border-radius:9px;border-color:transparent}
+.tg.dot::before{display:none}
+.tg.dot.qq{background:var(--qq-soft);color:var(--qq)}.tg.dot.kg{background:var(--kg-soft);color:var(--kg)}.tg.dot.kw{background:var(--kw-soft);color:var(--kw)}
+.tg.dot[aria-pressed="true"]{color:var(--on)}
+@media (max-width:380px){.mx-h,.mx-r{grid-template-columns:minmax(0,1fr) repeat(6,36px);column-gap:3px;padding:5px 6px}}
+
 /* Self-check table */
 .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--line);border-radius:16px}
 table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
@@ -212,6 +259,12 @@ let state={v:1,ts:0,accounts:[],days:{}};
 let tab="today", day=todayKey(), onlyTodo=false, bulkOpen=false;
 let keepShown=new Set();           // cards completed while "只看未完成" is on stay visible until the view changes
 let sel=new Set(), target=null;
+const VIEWS=[["grid","总览表"],["plat","按平台"],["card","按账号"]];
+const EMPTY='<p class="empty">这一天的账号全部做完了。</p>';
+let view="grid", plat="qq";
+try{const p=JSON.parse(localStorage.getItem("gbdt-view")||"{}");if(VIEWS.some(v=>v[0]===p.view))view=p.view;if(PLATS.some(x=>x.k===p.plat))plat=p.plat}catch(e){}
+function saveView(){try{localStorage.setItem("gbdt-view",JSON.stringify({view,plat}))}catch(e){}}
+function platDone(aid,pk){const r=peek(day,aid);return !!(r[pk+"_g"]&&r[pk+"_t"])}
 let mode="loading", ref=null, saveTimer=null, inflight=false, deferred=false;
 const lastTap={};
 
@@ -345,8 +398,8 @@ function todayView(){
       <div class="plats">${plats}</div>
     </div>
     <details class="bulkbox" id="bulkbox" ${bulkOpen?"open":""}><summary>批量操作</summary><div class="bulk">${bulk}</div></details>
-    <div class="tools"><label><input type="checkbox" id="todo" ${onlyTodo?"checked":""}>只看还没做完的账号</label></div>
-    <div class="grid">${cards||'<p class="empty">这一天的账号全部做完了。</p>'}</div>`;
+    <div class="tools"><div class="seg" role="group" aria-label="排列方式">${VIEWS.map(([k,n])=>`<button type="button" data-act="view" data-v="${k}" aria-pressed="${view===k}">${n}</button>`).join("")}</div><label><input type="checkbox" id="todo" ${onlyTodo?"checked":""}>只看没做完的</label></div>
+    ${view==="plat"?platView():view==="grid"?matrixView():`<div class="grid">${cards||EMPTY}</div>`}`;
   queueMicrotask(updateStats);
   return html;
 }
@@ -357,16 +410,38 @@ function updateStats(){
   for(const p of PLATS){
     const c=platCount(day,p.k,"g")+platCount(day,p.k,"t");
     const s=document.querySelector('[data-stat="p-'+p.k+'"]');if(s)s.textContent=c+"/"+N*2;
+    const pt=document.querySelector('[data-stat="pt-'+p.k+'"]');if(pt)pt.textContent=state.accounts.filter(a=>platDone(a.id,p.k)).length+"/"+N;
     const m=document.querySelector('[data-meter="'+p.k+'"]');if(m)m.style.width=(N?c/(N*2)*100:0)+"%";
     for(const tk of TASKS){const b=document.querySelector('[data-act="bulk"][data-p="'+p.k+'"][data-t="'+tk.k+'"]');if(b)b.innerHTML=bulkLabel(p.k,tk.k)}
   }
 }
 function updateCard(aid){
-  const card=document.querySelector('.card[data-a="'+aid+'"]');if(!card)return;
   const r=peek(day,aid),c=doneCount(day,aid);
-  card.querySelectorAll(".tg").forEach(b=>b.setAttribute("aria-pressed",!!r[b.dataset.k]));
-  card.querySelector(".cnt").textContent=c===6?"今日完成":c+"/6";
-  card.classList.toggle("done",c===6);
+  document.querySelectorAll('#main [data-a="'+aid+'"]').forEach(el=>{
+    el.querySelectorAll(".tg").forEach(b=>b.setAttribute("aria-pressed",!!r[b.dataset.k]));
+    const cnt=el.querySelector(".cnt");if(cnt)cnt.textContent=c===6?"今日完成":c+"/6";
+    el.classList.toggle("done",el.dataset.plat?platDone(aid,el.dataset.plat):c===6);
+  });
+}
+function platView(){
+  const N=state.accounts.length;
+  const tabs=PLATS.map(p=>`<button type="button" class="ptab ${p.k}" data-act="plat" data-p="${p.k}" aria-pressed="${plat===p.k}"><span>${p.n}</span><span class="num" data-stat="pt-${p.k}">${state.accounts.filter(a=>platDone(a.id,p.k)).length}/${N}</span></button>`).join("");
+  const list=state.accounts.filter(a=>!onlyTodo||!platDone(a.id,plat)||keepShown.has(a.id));
+  const rows=list.map(a=>{const r=peek(day,a.id);
+    return `<div class="prow ${platDone(a.id,plat)?"done":""}" data-a="${a.id}" data-plat="${plat}">
+      <div class="pnm"><span class="idx num">${state.accounts.indexOf(a)+1}</span><span class="t">${esc(a.name)}</span>${plat==="kw"?`<span class="dl" id="d-${a.id}">${deltaHtml(day,a.id)}</span>`:""}</div>
+      ${TASKS.map(t=>`<button type="button" class="tg sm ${plat}" data-act="tg" data-k="${plat}_${t.k}" aria-pressed="${!!r[plat+"_"+t.k]}">${t.n}</button>`).join("")}
+      ${plat==="kw"?`<input class="num kwi" id="n-${a.id}" data-act="kwn" type="text" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off" placeholder="累计数" aria-label="${esc(a.name)} 酷我累计听歌" value="${typeof r.kw_n==="number"?r.kw_n:""}">`:""}
+    </div>`}).join("");
+  return `<div class="ptabs">${tabs}</div><div class="plist ${plat}">${rows||EMPTY}</div>`;
+}
+function matrixView(){
+  const list=state.accounts.filter(a=>!onlyTodo||doneCount(day,a.id)<6||keepShown.has(a.id));
+  const head=`<div class="mx-h"><span>账号</span>${PLATS.map(p=>`<span class="${p.k}" style="grid-column:span 2">${p.n}</span>`).join("")}</div>`;
+  const rows=list.map(a=>{const r=peek(day,a.id);
+    return `<div class="mx-r ${doneCount(day,a.id)===6?"done":""}" data-a="${a.id}"><span class="t"><span class="idx num">${state.accounts.indexOf(a)+1}</span>${esc(a.name)}</span>
+      ${PLATS.map(p=>TASKS.map(t=>`<button type="button" class="tg dot ${p.k}" data-act="tg" data-k="${p.k}_${t.k}" aria-pressed="${!!r[p.k+"_"+t.k]}" aria-label="${esc(a.name)} ${p.n}${t.n}">${t.n.slice(-1)}</button>`).join("")).join("")}</div>`}).join("");
+  return `<div class="mx">${head}${rows||EMPTY}</div><p class="note" style="margin-top:10px">“挂”是挂播，“投”是打投。酷我累计听歌数请在“按平台”里选酷我填写。</p>`;
 }
 function checkView(){
   const days=[];for(let i=6;i>=0;i--){const k=shift(day,-i);if(k>=START)days.push(k)}
@@ -428,9 +503,12 @@ document.addEventListener("click",e=>{
     lastTap[key]=now;
     const r=rec(day,aid);if(r[k])delete r[k];else r[k]=1;
     save();updateCard(aid);updateStats();
-    if(doneCount(day,aid)===6){if(onlyTodo)keepShown.add(aid);toast("这个号今天全部完成")}
+    if(onlyTodo&&(doneCount(day,aid)===6||(view==="plat"&&platDone(aid,plat))))keepShown.add(aid);
+    if(doneCount(day,aid)===6)toast("这个号今天全部完成");
     return;
   }
+  if(act==="view"){view=b.dataset.v;keepShown.clear();saveView();softRender();return}
+  if(act==="plat"){plat=b.dataset.p;keepShown.clear();saveView();softRender();return}
   if(act==="bulk"){const pk=b.dataset.p,tk=b.dataset.t,k=pk+"_"+tk,all=platCount(day,pk,tk)===state.accounts.length;
     for(const a of state.accounts){const r=rec(day,a.id);if(all)delete r[k];else r[k]=1;if(!all&&onlyTodo&&doneCount(day,a.id)===6)keepShown.add(a.id)}
     save();for(const a of state.accounts)updateCard(a.id);updateStats();return}
@@ -478,6 +556,8 @@ document.addEventListener("toggle",e=>{if(e.target.id==="bulkbox")bulkOpen=e.tar
 // roll over to the new day if the page stays open past midnight
 setInterval(()=>{const k=todayKey();if(day!==k&&day===shift(k,-1)&&!busy()){day=k;keepShown.clear();softRender()}},60000);
 
+const setHH=()=>{const h=document.querySelector("header");if(h)document.documentElement.style.setProperty("--hh",h.offsetHeight+"px")};
+addEventListener("resize",setHH);setHH();
 if(day<START)day=START;
 const local=loadLocal();if(local){state=local;state.ts??=0;const had=Object.keys(state.days).some(k=>k<START);if(had){prune();saveLocal()}}
 render();setMode("loading");connect();
