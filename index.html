@@ -259,7 +259,7 @@ let state={v:1,ts:0,accounts:[],days:{}};
 let tab="today", day=todayKey(), onlyTodo=false, bulkOpen=false;
 let keepShown=new Set();           // cards completed while "只看未完成" is on stay visible until the view changes
 let sel=new Set(), target=null;
-const VIEWS=[["grid","总览表"],["plat","按平台"],["card","按账号"]];
+const VIEWS=[["grid","总览表"],["card","按账号"],["plat","按平台"]];
 const EMPTY='<p class="empty">这一天的账号全部做完了。</p>';
 let view="grid", plat="qq";
 try{const p=JSON.parse(localStorage.getItem("gbdt-view")||"{}");if(VIEWS.some(v=>v[0]===p.view))view=p.view;if(PLATS.some(x=>x.k===p.plat))plat=p.plat}catch(e){}
@@ -457,7 +457,7 @@ function checkView(){
   }).join("");
   return `<div class="dayhead" style="grid-template-columns:1fr"><div>${dateBar()}</div></div>
     <h2>酷我累计听歌数</h2>
-    <p class="note">每天在打卡页填“酷我累计听歌”，这里会算出比上一次记录涨了多少。橙色格子表示没涨，说明那个号前一天可能没挂上。手机上可以左右滑动表格。</p>
+    <p class="note">每天在打卡页填“酷我累计听歌”，这里会算出比上一次记录涨了多少。</p>
     <div class="tablewrap"><table><thead><tr><th>账号</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function manageView(){
@@ -474,7 +474,7 @@ function manageView(){
   if(T>N)applyBtn=`<button class="primary" data-act="apply">确认新增 ${T-N} 个</button>`;
   else if(T<N)applyBtn=`<button class="primary" data-act="apply" ${sel.size===need?"":"disabled"}>确认删除 ${need} 个</button>`;
   return `<h2>账号管理</h2>
-    <p class="note">名字只给你自己看，建议写成能一眼认出的样子，比如“小号3 尾号28”。在打卡页点账号名字也能直接改。删除账号会一并删掉它的打卡记录。</p>
+    <p class="note">在打卡页点账号名字也能直接改。删除账号会一并删掉它的打卡记录。</p>
     <div class="countbox"><b>账号数量</b>
       <div class="stepper"><button class="sq" data-act="tdec" aria-label="减少">−</button>
         <input id="tcnt" class="num" type="text" inputmode="numeric" pattern="[0-9]*" value="${T}" aria-label="目标账号数量">
@@ -483,7 +483,7 @@ function manageView(){
     <div class="mlist">${items||'<p class="empty">还没有账号。</p>'}</div>
     <div class="actions"><button class="primary" data-act="add">添加一个账号</button>
       ${T===N&&sel.size?`<button class="ghost danger" data-act="delsel">删除选中的 ${sel.size} 个</button>`:""}
-      ${N?'<button class="ghost danger" data-act="reset">清空全部重新设置</button>':""}</div>`;
+</div>`;
 }
 function removeAccounts(ids){
   state.accounts=state.accounts.filter(x=>!ids.has(x.id));
