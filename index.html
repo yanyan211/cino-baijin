@@ -333,7 +333,7 @@ function todayView(){
       <h3><input class="nm" id="nm-${a.id}" data-act="rename" value="${esc(a.name)}" aria-label="账号名称，可直接修改" enterkeyhint="done"><span class="cnt num">${c===6?"今日完成":c+"/6"}</span></h3>
       ${PLATS.map(p=>`<div class="row ${p.k}"><span class="pn">${p.n}</span>
         ${TASKS.map(t=>`<button type="button" class="tg" data-act="tg" data-k="${p.k}_${t.k}" aria-pressed="${!!r[p.k+"_"+t.k]}">${t.n}</button>`).join("")}</div>`).join("")}
-      <div class="kwn"><label for="n-${a.id}">酷我昨日累计听歌</label>
+      <div class="kwn"><label for="n-${a.id}">酷我累计听歌</label>
         <div class="in"><input class="num" id="n-${a.id}" data-act="kwn" type="text" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off" placeholder="填数字" value="${typeof r.kw_n==="number"?r.kw_n:""}">
         <span id="d-${a.id}">${deltaHtml(day,a.id)}</span></div></div>
     </article>`;
@@ -382,7 +382,7 @@ function checkView(){
   }).join("");
   return `<div class="dayhead" style="grid-template-columns:1fr"><div>${dateBar()}</div></div>
     <h2>酷我累计听歌数</h2>
-    <p class="note">每天在打卡页填“昨日累计听歌数”，这里会算出比上一次记录涨了多少。橙色格子表示没涨，说明那个号前一天可能没挂上。手机上可以左右滑动表格。</p>
+    <p class="note">每天在打卡页填“酷我累计听歌”，这里会算出比上一次记录涨了多少。橙色格子表示没涨，说明那个号前一天可能没挂上。手机上可以左右滑动表格。</p>
     <div class="tablewrap"><table><thead><tr><th>账号</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function manageView(){
