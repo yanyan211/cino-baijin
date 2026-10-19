@@ -444,7 +444,7 @@ function matrixView(){
   return `<div class="mx">${head}${rows||EMPTY}</div><p class="note" style="margin-top:10px">“挂”是挂播，“投”是打投。酷我累计听歌数请在“按平台”里选酷我填写。</p>`;
 }
 function checkView(){
-  const days=[];for(let i=6;i>=0;i--){const k=shift(day,-i);if(k>=START)days.push(k)}
+  const days=[];for(let i=0;i<=6;i++){const k=shift(day,-i);if(k>=START)days.push(k)}
   const head=days.map(k=>{const [,m,d]=k.split("-").map(Number);return `<th>${m}/${d}</th>`}).join("");
   const rows=state.accounts.map(a=>{
     const cells=days.map(k=>{
